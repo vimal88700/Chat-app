@@ -16,15 +16,13 @@ io.on('connection', (socket) => {
     let currentName = "";
 
     socket.on('joinRoom', async ({ roomCode, username }) => {
-        currentRoom = roomCode;
-        currentName = username;
+        currentRoom = roomCode; currentName = username;
         socket.join(roomCode);
         const { data } = await supabase.from('messages').select('*').eq('room_code', roomCode).order('created_at', { ascending: true }).limit(50);
         if (data) socket.emit('previousMessages', data);
-        socket.to(roomCode).emit('systemMessage', `${username} joined`);
+        socket.to(roomCode).emit('systemMessage', `${username.toUpperCase()} JOINED`);
     });
 
-    // NEW SIGNALING
     socket.on('call-request', (data) => {
         socket.to(currentRoom).emit('incoming-call', data);
     });
@@ -35,7 +33,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        if (currentRoom) io.to(currentRoom).emit('systemMessage', `${currentName} left`);
+        if (currentRoom) io.to(currentRoom).emit('systemMessage', `${currentName.toUpperCase()} LEFT`);
     });
 });
 
