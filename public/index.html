@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>6-Digit Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        #setup, #chat-area { background: white; padding: 20px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #messages { height: 300px; overflow-y: auto; border: 1px solid #eee; margin-bottom: 10px; padding: 10px; }
+        .msg { margin-bottom: 8px; font-size: 0.9em; }
+        .msg b { color: #007bff; }
+    </style>
+</head>
+<body>
+
+<div id="setup">
+    <h2>Enter 6-Digit Code</h2>
+    <input type="text" id="code" placeholder="Example: 123456" maxlength="6">
+    <input type="text" id="name" placeholder="Your Nickname">
+    <button onclick="start()">Join Chat</button>
+</div>
+
+<div id="chat-area" style="display:none;">
+    <h3 id="roomTitle"></h3>
+    <div id="messages"></div>
+    <input type="text" id="msgInput" placeholder="Type a message...">
+    <button onclick="send()">Send</button>
+</div>
+
+<script>
+    const socket = io();
+    let currentRoom = "";
+    let myName = "";
+
+    function start() {
+        currentRoom = document.getElementById('code').value;
+        myName = document.getElementById('name').value || "Anon";
+        if(currentRoom.length === 6) {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('chat-area').style.display = 'block';
+            document.getElementById('roomTitle').innerText = "Room: " + currentRoom;
+            socket.emit('joinRoom', { roomCode: currentRoom, username: myName });
+        }
+    }
+
+    function send() {
+        const text = document.getElementById('msgInput').value;
+        if(text) {
+            socket.emit('sendMessage', { roomCode: currentRoom, message: text, username: myName });
+            document.getElementById('msgInput').value = "";
+        }
+    }
+
+    socket.on('newMessage', (msg) => {
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `[${msg.time}] <b>${msg.user}:</b> ${msg.text}`;
+        document.getElementById('messages').appendChild(div);
+        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    });
+
+    socket.on('previousMessages', (msgs) => {
+        msgs.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'msg';
+            div.innerHTML = `[${msg.time}] <b>${msg.user}:</b> ${msg.text}`;
+            document.getElementById('messages').appendChild(div);
+        });
+    });
+</script>
+</body>
+</html>
