@@ -1,7 +1,7 @@
 {
-  "name": "anonymous-chat",
-  "version": "1.1.0",
-  "description": "6-digit code chat with database",
+  "name": "ultimate-chat-app",
+  "version": "1.2.0",
+  "description": "6-digit chat with DB and Video",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
