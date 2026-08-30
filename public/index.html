@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ultimate Private Chat</title>
+    <title>Pro Chat & Call</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #e5ddd5; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Login Screen */
-        #setup { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: white; z-index: 100; }
-        #setup input { width: 80%; padding: 12px; margin: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        #setup button { width: 85%; padding: 12px; background: #25d366; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
+        /* Entrance Screen */
+        #setup { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: white; width: 100%; position: absolute; z-index: 1000; }
+        #setup input { width: 80%; padding: 15px; margin: 10px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; }
+        #setup button { width: 85%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; }
 
-        /* Main Chat UI */
-        #chat-area { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 600px; margin: auto; background: #fff; }
-        #header { background: #075e54; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        /* Main Chat Area */
+        #chat-area { display: none; flex-direction: column; height: 100vh; background: #fff; width: 100%; }
+        #header { background: #075e54; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Video Container (Hidden until call) */
-        #video-panel { display: none; background: #000; position: relative; height: 280px; width: 100%; }
-        #video-grid { display: grid; grid-template-columns: 1f
+        /* Video Panel */
+        #
