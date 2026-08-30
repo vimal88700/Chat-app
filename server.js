@@ -8,7 +8,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // PASTE YOUR KEYS HERE
-const supabase = createClient('https://tmesumqbayplvypqdcqd.supabase.co/rest/v1/',eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRtZXN1bXFiYXlwbHZ5cHFkY3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNTczOTgsImV4cCI6MjEwMzYzMzM5OH0.Y2Y3dU8JeohDgo0W2dTrq7gkxvgj_X7fUwHMyEjx1Qc '');
+const supabase = createClient('https://tmesumqbayplvypqdcqd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWJhYmFzZSIsInJlZiI6InRtZXN1bXFiYXlwbHZ5cHFkY3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODgwNTIsImV4cCI6MjA0NDk2NDA1Mn0.Y2Y3dU84SmVvaERnbzBXM2RUcnE3Z2t4dmdqX1g3ZlV3SE15RWp4MVFj');
 
 app.use(express.static('public'));
 
