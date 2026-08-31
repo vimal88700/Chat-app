@@ -37,3 +37,7 @@ The cache-busted local build successfully entered an 8-digit room, displayed one
 ## Mobile scroll fix verification
 
 The mobile layout was patched so `.app-body` and `.chat-panel` are height-constrained, `#messages` is the only independently scrollable region with touch scrolling, and `.composer` is flex-fixed/sticky at the bottom. A local long-message test produced `scrollHeight > clientHeight` and kept the composer bottom aligned with the viewport, confirming the composer no longer gets pushed below the screen. The UI now includes a `↓ Latest` button that appears when the user scrolls away from the newest messages.
+
+## Messaging-first correction verification
+
+The separate Jitsi meeting modal and external Jitsi references were removed from the client. The local room now displays one `Call` button, and opening it shows `Audio call` and `Video call` menu items. The room continues to use the existing no-login room-code/name flow, while the mobile scroll button and fixed composer remain present.
