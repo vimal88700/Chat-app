@@ -133,15 +133,10 @@
     .scroll-latest { position:absolute; right:18px; bottom:88px; z-index:4; padding:9px 13px; border:1px solid var(--line); border-radius:999px; background:var(--panel-strong); color:var(--text); box-shadow:var(--shadow); font-size:.78rem; font-weight:800; }
     .scroll-latest:hover { background:var(--accent); color:#06201e; }
     .call-panel { position:absolute; inset:12px 12px auto; z-index:3; display:none; min-height:250px; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:#03070b; box-shadow:var(--shadow); }
-    .meeting-modal { z-index:25; }
-    .meeting-modal .modal { width:min(1100px, 100%); max-width:1100px; padding:14px; }
-    .meeting-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-    .meeting-head h2 { margin:0; }
-    .meeting-head .meeting-actions { display:flex; gap:8px; align-items:center; }
-    .meeting-head .meeting-actions button, .meeting-head .meeting-actions a { width:auto; padding:9px 11px; }
-    .meeting-frame { min-height:min(72vh, 720px); overflow:hidden; border-radius:16px; background:#101820; }
-    .meeting-frame iframe { display:block; width:100%; height:min(72vh, 720px); min-height:520px; border:0; }
-    .meeting-help { margin:10px 0 0 !important; font-size:.78rem; }
+    .call-menu-wrap { position:relative; }
+    .call-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:12; width:170px; padding:7px; border:1px solid var(--line); border-radius:15px; background:var(--panel-strong); box-shadow:var(--shadow); }
+    .call-menu button { display:block; width:100%; padding:11px 12px; border:0; border-radius:10px; background:transparent; color:var(--text); text-align:left; font-weight:750; }
+    .call-menu button:hover { background:var(--line); }
     .call-panel.active { display:block; }
     .call-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); min-height:250px; gap:2px; background:#020506; }
     .video-tile { position:relative; min-height:250px; background:linear-gradient(145deg,#14212d,#030508); }
@@ -200,7 +195,7 @@
     <header class="app-topbar">
       <div class="brand"><span class="brand-mark">↗</span><span>Orbit Chat</span></div>
       <div class="room-title"><div><strong id="roomName">Room</strong><span class="room-code" id="roomCodeLabel"></span><span class="connection" id="connectionStatus">Connecting…</span></div></div>
-      <div class="top-actions"><button class="icon-btn call-btn" id="meetingBtn" type="button" title="Open group meeting" aria-label="Open group meeting">Meet</button><button class="icon-btn" id="profileBtn" type="button" title="Profile and settings" aria-label="Profile and settings">●</button></div>
+      <div class="top-actions"><div class="call-menu-wrap"><button class="icon-btn call-btn" id="callMenuBtn" type="button" title="Start a call" aria-label="Start a call">Call</button><div class="call-menu hidden" id="callMenu" role="menu"><button id="audioCallBtn" type="button" role="menuitem">Audio call</button><button id="videoCallBtn" type="button" role="menuitem">Video call</button></div></div><button class="icon-btn" id="profileBtn" type="button" title="Profile and settings" aria-label="Profile and settings">●</button></div>
     </header>
     <div class="app-body">
       <aside class="sidebar" aria-label="Room details and settings">
@@ -223,7 +218,6 @@
   <div class="modal-backdrop hidden" id="themeModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="themeTitle"><h2 id="themeTitle">Make it yours</h2><p>Appearance is saved only on this device. Choose a theme and a small accent color.</p><div class="field"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="dark">Deep space</option><option value="light">Light</option><option value="violet">Violet</option><option value="sunset">Sunset</option></select></div><div class="field"><label for="accentPicker">Accent color</label><input id="accentPicker" type="color" value="#45e0bd" style="width:100%;height:44px;border:0;border-radius:12px;background:transparent"></div><div class="modal-actions"><button class="ghost-btn close-modal" type="button">Close</button><button class="primary-btn" id="saveThemeBtn" type="button">Apply</button></div></div></div>
   <div class="modal-backdrop hidden" id="retentionModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="retentionTitle"><h2 id="retentionTitle">Message retention</h2><p>New messages can expire automatically. Set 0 to keep them until you delete them. Existing messages keep their original timer.</p><div class="field"><label for="retentionSelect">Delete after</label><select id="retentionSelect"><option value="0">Never automatically</option><option value="1">1 day</option><option value="7">1 week</option><option value="14">2 weeks</option><option value="30">30 days</option><option value="90">90 days</option></select></div><div class="modal-actions"><button class="ghost-btn close-modal" type="button">Cancel</button><button class="primary-btn" id="saveRetentionBtn" type="button">Save timer</button></div></div></div>
   <div class="modal-backdrop hidden" id="incomingModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="incomingTitle"><h2 id="incomingTitle">Incoming call</h2><p id="incomingText">Someone is calling this room.</p><div class="modal-actions"><button class="ghost-btn" id="declineCallBtn" type="button">Decline</button><button class="primary-btn" id="acceptCallBtn" type="button">Accept</button></div></div></div>
-  <div class="modal-backdrop meeting-modal hidden" id="meetingModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="meetingTitle"><div class="meeting-head"><div><h2 id="meetingTitle">Room meeting</h2><p id="meetingStatus" class="meeting-help">Loading meeting controls…</p></div><div class="meeting-actions"><a class="ghost-btn" id="meetingOpenLink" href="#" target="_blank" rel="noopener">Open full screen</a><button class="danger-btn" id="closeMeetingBtn" type="button">Leave</button></div></div><div class="meeting-frame" id="jitsiContainer"></div></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -253,17 +247,6 @@
       function setConnection(online) { $('connectionStatus').textContent = online ? 'Connected' : 'Reconnecting…'; $('connectionStatus').classList.toggle('online', online); }
       function openModal(id) { $(id).classList.remove('hidden'); }
       function closeModal(id) { $(id).classList.add('hidden'); }
-      let jitsiApi = null;
-      function loadJitsiSdk() { return new Promise((resolve, reject) => { if (window.JitsiMeetExternalAPI) return resolve(); const script = document.createElement('script'); script.src = 'https://meet.jit.si/external_api.js'; script.async = true; script.onload = () => resolve(); script.onerror = () => reject(new Error('Jitsi SDK could not load')); document.head.appendChild(script); }); }
-      async function openMeeting() {
-        if (!state.joined) return showToast('Enter a room before opening a meeting.');
-        if (jitsiApi) closeMeeting();
-        openModal('meetingModal'); $('meetingStatus').textContent = 'Loading secure meeting controls…'; $('meetingTitle').textContent = 'Room meeting · ' + state.roomCode; $('jitsiContainer').textContent = '';
-        const roomName = 'OrbitChat-' + state.roomCode; $('meetingOpenLink').href = 'https://meet.jit.si/' + encodeURIComponent(roomName);
-        try { await loadJitsiSdk(); jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', { roomName, parentNode: $('jitsiContainer'), width:'100%', height:'100%', userInfo:{ displayName:state.myName }, configOverwrite:{ prejoinConfig:{ enabled:true }, startWithAudioMuted:true, startWithVideoMuted:false, disableAP:true, disableDeepLinking:true }, interfaceConfigOverwrite:{ TILE_VIEW_MAX_COLUMNS:3, MOBILE_APP_PROMO:false, SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false, TOOLBAR_BUTTONS:['microphone','camera','desktop','chat','raisehand','tileview','fullscreen','hangup','settings','participants-pane'] } }); $('meetingStatus').textContent = 'Anyone in this Orbit room can join the same meeting.'; jitsiApi.addEventListener('readyToClose', closeMeeting); } catch (_) { $('meetingStatus').textContent = 'The meeting service could not load. Check your connection or use Open full screen.'; showToast('Meeting controls could not load.'); }
-      }
-      function closeMeeting() { if (jitsiApi) { try { jitsiApi.dispose(); } catch (_) {} jitsiApi = null; } $('jitsiContainer').textContent = ''; closeModal('meetingModal'); }
-
       function ensurePeer() {
         if (state.peer || typeof Peer === 'undefined') return;
         state.peer = new Peer(undefined, { debug: 0, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } });
@@ -356,7 +339,7 @@
       $('roomCode').onkeydown = (event) => { if (event.key === 'Enter') enterRoom(); }; $('name').onkeydown = (event) => { if (event.key === 'Enter') enterRoom(); };
       $('sendBtn').onclick = sendMessage; $('messageInput').oninput = () => { resizeComposer(); setTyping(Boolean($('messageInput').value.trim())); }; $('messageInput').onkeydown = (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } }; $('messages').addEventListener('scroll', updateScrollButton, { passive:true }); $('scrollLatestBtn').onclick = () => scrollToLatest(true);
       $('attachBtn').onclick = () => $('fileInput').click(); $('fileInput').onchange = () => { const file = $('fileInput').files[0]; if (file) uploadMedia(file, 'media'); $('fileInput').value = ''; };
-      $('meetingBtn').onclick = openMeeting; $('closeMeetingBtn').onclick = closeMeeting; $('hangupBtn').onclick = () => endCall(true); $('micBtn').onclick = toggleMic; $('camBtn').onclick = toggleCam; $('flipBtn').onclick = flipCamera;
+      $('callMenuBtn').onclick = () => $('callMenu').classList.toggle('hidden'); $('audioCallBtn').onclick = () => { $('callMenu').classList.add('hidden'); startCall(false); }; $('videoCallBtn').onclick = () => { $('callMenu').classList.add('hidden'); startCall(true); }; document.addEventListener('click', (event) => { if (!event.target.closest('.call-menu-wrap')) $('callMenu').classList.add('hidden'); }); $('hangupBtn').onclick = () => endCall(true); $('micBtn').onclick = toggleMic; $('camBtn').onclick = toggleCam; $('flipBtn').onclick = flipCamera;
       $('profileBtn').onclick = () => { $('profileName').value = state.myName; renderAvatar($('avatarPreview'), state.avatarUrl, state.myName); openModal('profileModal'); }; $('profileSideBtn').onclick = () => $('profileBtn').click(); $('avatarBtn').onclick = () => $('avatarInput').click(); $('avatarInput').onchange = () => { const file = $('avatarInput').files[0]; if (file) uploadMedia(file, 'avatar'); $('avatarInput').value = ''; }; $('closeProfileBtn').onclick = () => closeModal('profileModal');
       $('saveProfileBtn').onclick = async () => { const name = String($('profileName').value || '').trim().slice(0, 40); if (!name) return showToast('Add a display name.'); state.myName = name; localStorage.setItem('orbit-name', name); socket.emit('profile:update', { username:name, avatarUrl:state.avatarUrl }); if (state.roomCode) { try { await fetch('/api/profile', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ userId:state.clientId, username:name, avatarUrl:state.avatarUrl || 'none' }) }); } catch (_) {} } $('roomName').textContent = 'Room ' + state.roomCode; closeModal('profileModal'); showToast('Profile updated.'); };
       $('themeBtn').onclick = () => openModal('themeModal'); $('themeSelect').onchange = () => { state.theme = $('themeSelect').value; applyTheme(); }; $('accentPicker').oninput = () => { state.accent = $('accentPicker').value; applyTheme(); }; $('saveThemeBtn').onclick = () => { localStorage.setItem('orbit-theme', state.theme); localStorage.setItem('orbit-accent', state.accent); closeModal('themeModal'); showToast('Appearance saved on this device.'); }; $('retentionBtn').onclick = () => openModal('retentionModal'); $('retentionSelect').value = String(state.retentionDays); $('saveRetentionBtn').onclick = () => { state.retentionDays = Number($('retentionSelect').value); localStorage.setItem('orbit-retention', String(state.retentionDays)); closeModal('retentionModal'); showToast(state.retentionDays ? 'New messages expire after ' + state.retentionDays + ' day(s).' : 'New messages will stay until deleted.'); }; $('leaveBtn').onclick = () => { endCall(true); window.location.reload(); };
