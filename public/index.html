@@ -78,7 +78,7 @@
     .icon-btn { width:40px; height:40px; display:grid; place-items:center; background:transparent; color:var(--text); font-size:1.15rem; }
     .icon-btn:hover { background:var(--line); }
     .call-btn { color:var(--accent); }
-    .app-body { display:grid; grid-template-columns:280px minmax(0,1fr); min-height:0; flex:1; width:min(1440px, 100%); margin:0 auto; }
+    .app-body { display:grid; grid-template-columns:280px minmax(0,1fr); min-height:0; flex:1; width:min(1440px, 100%); margin:0 auto; overflow:hidden; }
     .sidebar { overflow:auto; padding:18px; border-right:1px solid var(--line); background:var(--panel); }
     .side-section { margin-bottom:24px; }
     .side-section h2 { margin:0 0 12px; color:var(--muted); font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; }
@@ -94,10 +94,10 @@
     .side-actions { display:grid; gap:9px; }
     .ghost-btn, .danger-btn { width:100%; padding:11px 13px; background:var(--line); color:var(--text); font-weight:750; text-align:left; }
     .danger-btn { color:var(--danger); }
-    .chat-panel { display:flex; min-width:0; min-height:0; flex-direction:column; position:relative; }
+    .chat-panel { display:flex; min-width:0; min-height:0; height:100%; overflow:hidden; flex-direction:column; position:relative; }
     .notice { min-height:0; padding:0 18px; border-bottom:1px solid transparent; color:var(--muted); font-size:.8rem; transition:padding .2s, border .2s; }
     .notice.active { padding:9px 18px; border-color:var(--line); }
-    #messages { flex:1; overflow-y:auto; overscroll-behavior:contain; padding:24px clamp(16px, 4vw, 56px); scroll-behavior:smooth; }
+    #messages { flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; overflow-anchor:none; padding:24px clamp(16px, 4vw, 56px); scroll-behavior:smooth; }
     .welcome { display:grid; place-items:center; min-height:100%; text-align:center; color:var(--muted); }
     .welcome-mark { display:grid; place-items:center; width:64px; height:64px; margin:auto auto 16px; border-radius:22px; color:#06201e; background:linear-gradient(135deg, var(--accent), #6cc4ff); font-size:1.6rem; font-weight:900; }
     .welcome h2 { margin:0 0 8px; color:var(--text); letter-spacing:-.03em; }
@@ -123,14 +123,25 @@
     .system-message { width:max-content; max-width:90%; margin:12px auto; padding:6px 11px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:.72rem; }
     .typing { min-height:0; padding:0 22px; color:var(--accent); font-size:.78rem; transition:height .2s, padding .2s; }
     .typing.active { padding:0 22px 9px; }
-    .composer { display:flex; align-items:flex-end; gap:8px; padding:12px max(14px, 3vw) max(14px, env(safe-area-inset-bottom)); border-top:1px solid var(--line); background:var(--panel); }
+    .composer { display:flex; flex:none; align-items:flex-end; gap:8px; padding:12px max(14px, 3vw) max(14px, env(safe-area-inset-bottom)); border-top:1px solid var(--line); background:var(--panel); z-index:4; }
     .composer-box { display:flex; align-items:flex-end; min-width:0; flex:1; padding:3px 4px 3px 14px; border:1px solid var(--line); border-radius:18px; background:var(--bubble); }
     .composer textarea { max-height:120px; min-height:42px; resize:none; padding:8px 7px; border:0; background:transparent; }
     .composer textarea:focus { box-shadow:none; }
     .send-btn { width:42px; height:42px; border-radius:14px; border:0; background:var(--accent); color:#06201e; font-weight:900; }
     .attach-btn { width:38px; height:38px; display:grid; place-items:center; border:0; border-radius:12px; background:transparent; color:var(--muted); font-size:1.15rem; }
     .attach-btn:hover { background:var(--line); color:var(--text); }
+    .scroll-latest { position:absolute; right:18px; bottom:88px; z-index:4; padding:9px 13px; border:1px solid var(--line); border-radius:999px; background:var(--panel-strong); color:var(--text); box-shadow:var(--shadow); font-size:.78rem; font-weight:800; }
+    .scroll-latest:hover { background:var(--accent); color:#06201e; }
     .call-panel { position:absolute; inset:12px 12px auto; z-index:3; display:none; min-height:250px; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:#03070b; box-shadow:var(--shadow); }
+    .meeting-modal { z-index:25; }
+    .meeting-modal .modal { width:min(1100px, 100%); max-width:1100px; padding:14px; }
+    .meeting-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+    .meeting-head h2 { margin:0; }
+    .meeting-head .meeting-actions { display:flex; gap:8px; align-items:center; }
+    .meeting-head .meeting-actions button, .meeting-head .meeting-actions a { width:auto; padding:9px 11px; }
+    .meeting-frame { min-height:min(72vh, 720px); overflow:hidden; border-radius:16px; background:#101820; }
+    .meeting-frame iframe { display:block; width:100%; height:min(72vh, 720px); min-height:520px; border:0; }
+    .meeting-help { margin:10px 0 0 !important; font-size:.78rem; }
     .call-panel.active { display:block; }
     .call-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); min-height:250px; gap:2px; background:#020506; }
     .video-tile { position:relative; min-height:250px; background:linear-gradient(145deg,#14212d,#030508); }
@@ -155,9 +166,12 @@
     @media (max-width: 760px) {
       .app-topbar { min-height:62px; padding:9px 12px; }
       .app-topbar .brand { display:none; }
-      .app-body { display:block; }
+      .app-body { display:flex; flex:1 1 auto; flex-direction:column; min-height:0; width:100%; overflow:hidden; }
       .sidebar { display:none; }
-      #messages { padding:18px 12px; }
+      .chat-panel { flex:1 1 auto; width:100%; min-height:0; height:100%; overflow:hidden; }
+      #messages { min-height:0; padding:18px 12px 24px; }
+      .composer { position:sticky; bottom:0; padding-bottom:max(12px, env(safe-area-inset-bottom)); }
+      .scroll-latest { right:12px; bottom:86px; }
       .message-row { max-width:96%; }
       .call-panel { inset:8px 8px auto; }
       .call-grid { grid-template-columns:1fr; min-height:360px; }
@@ -186,7 +200,7 @@
     <header class="app-topbar">
       <div class="brand"><span class="brand-mark">↗</span><span>Orbit Chat</span></div>
       <div class="room-title"><div><strong id="roomName">Room</strong><span class="room-code" id="roomCodeLabel"></span><span class="connection" id="connectionStatus">Connecting…</span></div></div>
-      <div class="top-actions"><button class="icon-btn call-btn" id="audioCallBtn" type="button" title="Start audio call" aria-label="Start audio call">◉</button><button class="icon-btn call-btn" id="videoCallBtn" type="button" title="Start video call" aria-label="Start video call">▣</button><button class="icon-btn" id="profileBtn" type="button" title="Profile and settings" aria-label="Profile and settings">●</button></div>
+      <div class="top-actions"><button class="icon-btn call-btn" id="meetingBtn" type="button" title="Open group meeting" aria-label="Open group meeting">Meet</button><button class="icon-btn" id="profileBtn" type="button" title="Profile and settings" aria-label="Profile and settings">●</button></div>
     </header>
     <div class="app-body">
       <aside class="sidebar" aria-label="Room details and settings">
@@ -198,6 +212,7 @@
         <div class="notice" id="notice" role="status" aria-live="polite"></div>
         <div class="call-panel" id="callPanel" aria-live="polite"><div class="call-grid"><div class="video-tile local"><video id="localVideo" autoplay playsinline muted></video><span class="video-caption">You</span></div><div class="video-tile"><video id="remoteVideo" autoplay playsinline></video><span class="video-caption" id="remoteCaption">Other person</span></div></div><div class="call-status" id="callStatus">Ready</div><div class="call-controls"><button id="micBtn" type="button" title="Toggle microphone" aria-label="Toggle microphone">Mic</button><button id="camBtn" type="button" title="Toggle camera" aria-label="Toggle camera">Cam</button><button id="flipBtn" type="button" title="Switch camera" aria-label="Switch camera">Flip</button><button class="hangup" id="hangupBtn" type="button" title="End call" aria-label="End call">End</button></div></div>
         <div id="messages" aria-live="polite"><div class="welcome" id="welcome"><div><div class="welcome-mark">↗</div><h2>Your room is ready.</h2><p>Start the conversation, invite people with the code, or share a small piece of the day.</p></div></div></div>
+        <button id="scrollLatestBtn" class="scroll-latest hidden" type="button" aria-label="Scroll to latest messages">↓ Latest</button>
         <div class="typing" id="typing" aria-live="polite"></div>
         <div class="composer"><input id="fileInput" type="file" class="sr-only" accept="image/*,video/*,audio/*"><button class="attach-btn" id="attachBtn" type="button" title="Share photo, video, or audio" aria-label="Share photo, video, or audio">＋</button><div class="composer-box"><textarea id="messageInput" rows="1" maxlength="4000" placeholder="Write a message…" aria-label="Write a message"></textarea></div><button class="send-btn" id="sendBtn" type="button" title="Send message" aria-label="Send message">↗</button></div>
       </main>
@@ -208,6 +223,7 @@
   <div class="modal-backdrop hidden" id="themeModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="themeTitle"><h2 id="themeTitle">Make it yours</h2><p>Appearance is saved only on this device. Choose a theme and a small accent color.</p><div class="field"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="dark">Deep space</option><option value="light">Light</option><option value="violet">Violet</option><option value="sunset">Sunset</option></select></div><div class="field"><label for="accentPicker">Accent color</label><input id="accentPicker" type="color" value="#45e0bd" style="width:100%;height:44px;border:0;border-radius:12px;background:transparent"></div><div class="modal-actions"><button class="ghost-btn close-modal" type="button">Close</button><button class="primary-btn" id="saveThemeBtn" type="button">Apply</button></div></div></div>
   <div class="modal-backdrop hidden" id="retentionModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="retentionTitle"><h2 id="retentionTitle">Message retention</h2><p>New messages can expire automatically. Set 0 to keep them until you delete them. Existing messages keep their original timer.</p><div class="field"><label for="retentionSelect">Delete after</label><select id="retentionSelect"><option value="0">Never automatically</option><option value="1">1 day</option><option value="7">1 week</option><option value="14">2 weeks</option><option value="30">30 days</option><option value="90">90 days</option></select></div><div class="modal-actions"><button class="ghost-btn close-modal" type="button">Cancel</button><button class="primary-btn" id="saveRetentionBtn" type="button">Save timer</button></div></div></div>
   <div class="modal-backdrop hidden" id="incomingModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="incomingTitle"><h2 id="incomingTitle">Incoming call</h2><p id="incomingText">Someone is calling this room.</p><div class="modal-actions"><button class="ghost-btn" id="declineCallBtn" type="button">Decline</button><button class="primary-btn" id="acceptCallBtn" type="button">Accept</button></div></div></div>
+  <div class="modal-backdrop meeting-modal hidden" id="meetingModal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="meetingTitle"><div class="meeting-head"><div><h2 id="meetingTitle">Room meeting</h2><p id="meetingStatus" class="meeting-help">Loading meeting controls…</p></div><div class="meeting-actions"><a class="ghost-btn" id="meetingOpenLink" href="#" target="_blank" rel="noopener">Open full screen</a><button class="danger-btn" id="closeMeetingBtn" type="button">Leave</button></div></div><div class="meeting-frame" id="jitsiContainer"></div></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -237,6 +253,16 @@
       function setConnection(online) { $('connectionStatus').textContent = online ? 'Connected' : 'Reconnecting…'; $('connectionStatus').classList.toggle('online', online); }
       function openModal(id) { $(id).classList.remove('hidden'); }
       function closeModal(id) { $(id).classList.add('hidden'); }
+      let jitsiApi = null;
+      function loadJitsiSdk() { return new Promise((resolve, reject) => { if (window.JitsiMeetExternalAPI) return resolve(); const script = document.createElement('script'); script.src = 'https://meet.jit.si/external_api.js'; script.async = true; script.onload = () => resolve(); script.onerror = () => reject(new Error('Jitsi SDK could not load')); document.head.appendChild(script); }); }
+      async function openMeeting() {
+        if (!state.joined) return showToast('Enter a room before opening a meeting.');
+        if (jitsiApi) closeMeeting();
+        openModal('meetingModal'); $('meetingStatus').textContent = 'Loading secure meeting controls…'; $('meetingTitle').textContent = 'Room meeting · ' + state.roomCode; $('jitsiContainer').textContent = '';
+        const roomName = 'OrbitChat-' + state.roomCode; $('meetingOpenLink').href = 'https://meet.jit.si/' + encodeURIComponent(roomName);
+        try { await loadJitsiSdk(); jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', { roomName, parentNode: $('jitsiContainer'), width:'100%', height:'100%', userInfo:{ displayName:state.myName }, configOverwrite:{ prejoinConfig:{ enabled:true }, startWithAudioMuted:true, startWithVideoMuted:false, disableAP:true, disableDeepLinking:true }, interfaceConfigOverwrite:{ TILE_VIEW_MAX_COLUMNS:3, MOBILE_APP_PROMO:false, SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false, TOOLBAR_BUTTONS:['microphone','camera','desktop','chat','raisehand','tileview','fullscreen','hangup','settings','participants-pane'] } }); $('meetingStatus').textContent = 'Anyone in this Orbit room can join the same meeting.'; jitsiApi.addEventListener('readyToClose', closeMeeting); } catch (_) { $('meetingStatus').textContent = 'The meeting service could not load. Check your connection or use Open full screen.'; showToast('Meeting controls could not load.'); }
+      }
+      function closeMeeting() { if (jitsiApi) { try { jitsiApi.dispose(); } catch (_) {} jitsiApi = null; } $('jitsiContainer').textContent = ''; closeModal('meetingModal'); }
 
       function ensurePeer() {
         if (state.peer || typeof Peer === 'undefined') return;
@@ -277,8 +303,12 @@
         const label = document.createElement('div'); label.className = 'media-label'; label.textContent = [message.mediaName || 'Shared media', formatBytes(message.mediaSize)].filter(Boolean).join(' · '); wrap.appendChild(label); bubble.appendChild(wrap);
       }
 
+      function isNearBottom() { const box = $('messages'); return box.scrollHeight - box.scrollTop - box.clientHeight < 96; }
+      function updateScrollButton() { $('scrollLatestBtn').classList.toggle('hidden', isNearBottom()); }
+      function scrollToLatest(smooth = true) { const box = $('messages'); box.scrollTo({ top: box.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); window.setTimeout(updateScrollButton, smooth ? 220 : 0); }
       function renderMessage(message) {
         if (!message || !message.id) return;
+        const wasNearBottom = isNearBottom();
         const old = document.querySelector('[data-message-id="' + CSS.escape(String(message.id)) + '"]'); if (old) old.remove();
         $('welcome').classList.add('hidden');
         const row = document.createElement('article'); row.className = 'message-row' + (message.senderId === state.clientId ? ' mine' : ''); row.dataset.messageId = message.id;
@@ -288,7 +318,7 @@
         if (message.deletedAt) bubble.textContent = 'Message deleted'; else { if (message.content) { const text = document.createElement('div'); text.textContent = message.content; bubble.appendChild(text); } if (message.mediaUrl) renderMedia(message, bubble); }
         content.append(meta, bubble);
         if (message.senderId === state.clientId && !message.deletedAt) { const tools = document.createElement('div'); tools.className = 'message-tools'; const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit'; edit.onclick = () => editMessage(message); const del = document.createElement('button'); del.type = 'button'; del.textContent = 'Delete'; del.onclick = () => deleteMessage(message); tools.append(edit, del); content.appendChild(tools); }
-        row.append(avatar, content); $('messages').appendChild(row); $('messages').scrollTop = $('messages').scrollHeight;
+        row.append(avatar, content); $('messages').appendChild(row); if (wasNearBottom) scrollToLatest(false); else updateScrollButton();
       }
       function editMessage(message) { const next = window.prompt('Edit your message', message.content || ''); if (next && next.trim() && next.trim() !== message.content) socket.emit('editMessage', { id: message.id, content: next.trim().slice(0, 4000) }); }
       function deleteMessage(message) { if (window.confirm('Delete this message for everyone in the room?')) socket.emit('deleteMessage', { id: message.id }); }
@@ -309,11 +339,12 @@
       function renderTyping() { const names = Array.from(typingUsers.values()); $('typing').textContent = names.length ? (names.length === 1 ? names[0] + ' is typing…' : names.slice(0, 3).join(', ') + ' are typing…') : ''; $('typing').classList.toggle('active', names.length > 0); }
 
       async function prepareLocalStream(video) { if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Media devices are not supported in this browser.'); const constraints = { audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true }, video: video ? { facingMode:'user', width:{ ideal:1280, max:1920 }, height:{ ideal:720, max:1080 } } : false }; state.stream = await navigator.mediaDevices.getUserMedia(constraints); $('localVideo').srcObject = state.stream; $('camBtn').disabled = !state.stream.getVideoTracks().length; }
+      function waitForPeerId(timeoutMs = 10000) { ensurePeer(); if (state.peerId || (state.peer && state.peer.id)) { state.peerId = state.peerId || state.peer.id; return Promise.resolve(state.peerId); } return new Promise((resolve, reject) => { const started = Date.now(); const timer = window.setInterval(() => { const id = state.peerId || (state.peer && state.peer.id); if (id) { state.peerId = id; window.clearInterval(timer); resolve(id); } else if (Date.now() - started > timeoutMs) { window.clearInterval(timer); reject(new Error('Peer connection did not become ready')); } }, 100); }); }
       function showCallPanel(status) { $('callPanel').classList.add('active'); $('callStatus').textContent = status || 'Connecting…'; }
       function attachCall(call) { state.call = call; showCallPanel('Connected'); call.on('stream', (remote) => { $('remoteVideo').srcObject = remote; $('remoteCaption').textContent = state.incoming ? state.incoming.callerName : 'Other person'; showCallPanel('Connected'); }); call.on('close', () => endCall(false)); call.on('error', () => { showToast('Call connection failed.'); endCall(false); }); }
-      async function startCall(video) { if (state.callActive) return showToast('You are already in a call.'); if (!state.peerId) return showToast('Calling is still starting. Try again in a moment.'); state.callActive = true; state.callVideo = video; state.callId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()); try { await prepareLocalStream(video); showCallPanel('Calling this room…'); socket.emit('call-request', { peerId: state.peerId, callId: state.callId, video }); window.clearTimeout(state.callTimer); state.callTimer = setTimeout(() => { if (state.callActive && !state.call) { showToast('Nobody accepted the call.'); endCall(true); } }, 30000); } catch (error) { state.callActive = false; showToast(error.name === 'NotAllowedError' ? 'Allow microphone/camera access in the browser to call.' : 'This device could not start the call.'); cleanupCallMedia(); } }
+      async function startCall(video) { if (state.callActive) return showToast('You are already in a call.'); if (!socket.connected) return showToast('Chat is reconnecting. Try the call again in a moment.'); state.callActive = true; state.callVideo = video; state.callId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()); try { const peerId = await waitForPeerId(); await prepareLocalStream(video); showCallPanel('Calling this room…'); socket.emit('call-request', { peerId, callId: state.callId, video }); window.clearTimeout(state.callTimer); state.callTimer = setTimeout(() => { if (state.callActive && !state.call) { showToast('Nobody accepted the call.'); endCall(true); } }, 30000); } catch (error) { state.callActive = false; showToast(error.name === 'NotAllowedError' ? 'Allow microphone/camera access in the browser to call.' : 'This device could not start the call.'); cleanupCallMedia(); } }
       function handleIncoming(data) { if (state.callActive || !data.callerPeerId) return; state.incoming = data; $('incomingText').textContent = data.callerName + ' is requesting a ' + (data.video ? 'video' : 'audio') + ' call.'; openModal('incomingModal'); }
-      async function acceptIncoming() { const incoming = state.incoming; closeModal('incomingModal'); if (!incoming) return; state.callActive = true; state.callVideo = incoming.video; state.callId = incoming.callId; try { await prepareLocalStream(incoming.video); showCallPanel('Joining call…'); socket.emit('call-accept', { callerPeerId: incoming.callerPeerId, callId: incoming.callId, video: incoming.video }); } catch (_) { showToast('Allow microphone/camera access to accept the call.'); endCall(false); } }
+      async function acceptIncoming() { const incoming = state.incoming; closeModal('incomingModal'); if (!incoming) return; state.callActive = true; state.callVideo = incoming.video; state.callId = incoming.callId; try { const acceptorPeerId = await waitForPeerId(); await prepareLocalStream(incoming.video); showCallPanel('Joining call…'); socket.emit('call-accept', { callerPeerId: incoming.callerPeerId, acceptorPeerId, callId: incoming.callId, video: incoming.video }); } catch (error) { showToast(error.message === 'Peer connection did not become ready' ? 'Call setup is still starting. Please try again.' : 'Allow microphone/camera access to accept the call.'); endCall(false); } }
       function declineIncoming() { if (state.incoming) socket.emit('call-ended', { callId: state.incoming.callId }); state.incoming = null; closeModal('incomingModal'); }
       function cleanupCallMedia() { if (state.stream) state.stream.getTracks().forEach((track) => track.stop()); state.stream = null; $('localVideo').srcObject = null; $('remoteVideo').srcObject = null; }
       function endCall(notify = true) { if (notify && state.callId) socket.emit('call-ended', { callId: state.callId }); window.clearTimeout(state.callTimer); if (state.call) { try { state.call.close(); } catch (_) {} } state.call = null; state.callActive = false; state.incoming = null; cleanupCallMedia(); $('callPanel').classList.remove('active'); }
@@ -323,18 +354,18 @@
 
       $('joinBtn').onclick = enterRoom; $('roomCode').oninput = (event) => { event.target.value = escapeRoom(event.target.value); }; $('name').value = state.myName;
       $('roomCode').onkeydown = (event) => { if (event.key === 'Enter') enterRoom(); }; $('name').onkeydown = (event) => { if (event.key === 'Enter') enterRoom(); };
-      $('sendBtn').onclick = sendMessage; $('messageInput').oninput = () => { resizeComposer(); setTyping(Boolean($('messageInput').value.trim())); }; $('messageInput').onkeydown = (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } };
+      $('sendBtn').onclick = sendMessage; $('messageInput').oninput = () => { resizeComposer(); setTyping(Boolean($('messageInput').value.trim())); }; $('messageInput').onkeydown = (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } }; $('messages').addEventListener('scroll', updateScrollButton, { passive:true }); $('scrollLatestBtn').onclick = () => scrollToLatest(true);
       $('attachBtn').onclick = () => $('fileInput').click(); $('fileInput').onchange = () => { const file = $('fileInput').files[0]; if (file) uploadMedia(file, 'media'); $('fileInput').value = ''; };
-      $('audioCallBtn').onclick = () => startCall(false); $('videoCallBtn').onclick = () => startCall(true); $('hangupBtn').onclick = () => endCall(true); $('micBtn').onclick = toggleMic; $('camBtn').onclick = toggleCam; $('flipBtn').onclick = flipCamera;
+      $('meetingBtn').onclick = openMeeting; $('closeMeetingBtn').onclick = closeMeeting; $('hangupBtn').onclick = () => endCall(true); $('micBtn').onclick = toggleMic; $('camBtn').onclick = toggleCam; $('flipBtn').onclick = flipCamera;
       $('profileBtn').onclick = () => { $('profileName').value = state.myName; renderAvatar($('avatarPreview'), state.avatarUrl, state.myName); openModal('profileModal'); }; $('profileSideBtn').onclick = () => $('profileBtn').click(); $('avatarBtn').onclick = () => $('avatarInput').click(); $('avatarInput').onchange = () => { const file = $('avatarInput').files[0]; if (file) uploadMedia(file, 'avatar'); $('avatarInput').value = ''; }; $('closeProfileBtn').onclick = () => closeModal('profileModal');
       $('saveProfileBtn').onclick = async () => { const name = String($('profileName').value || '').trim().slice(0, 40); if (!name) return showToast('Add a display name.'); state.myName = name; localStorage.setItem('orbit-name', name); socket.emit('profile:update', { username:name, avatarUrl:state.avatarUrl }); if (state.roomCode) { try { await fetch('/api/profile', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ userId:state.clientId, username:name, avatarUrl:state.avatarUrl || 'none' }) }); } catch (_) {} } $('roomName').textContent = 'Room ' + state.roomCode; closeModal('profileModal'); showToast('Profile updated.'); };
       $('themeBtn').onclick = () => openModal('themeModal'); $('themeSelect').onchange = () => { state.theme = $('themeSelect').value; applyTheme(); }; $('accentPicker').oninput = () => { state.accent = $('accentPicker').value; applyTheme(); }; $('saveThemeBtn').onclick = () => { localStorage.setItem('orbit-theme', state.theme); localStorage.setItem('orbit-accent', state.accent); closeModal('themeModal'); showToast('Appearance saved on this device.'); }; $('retentionBtn').onclick = () => openModal('retentionModal'); $('retentionSelect').value = String(state.retentionDays); $('saveRetentionBtn').onclick = () => { state.retentionDays = Number($('retentionSelect').value); localStorage.setItem('orbit-retention', String(state.retentionDays)); closeModal('retentionModal'); showToast(state.retentionDays ? 'New messages expire after ' + state.retentionDays + ' day(s).' : 'New messages will stay until deleted.'); }; $('leaveBtn').onclick = () => { endCall(true); window.location.reload(); };
       document.querySelectorAll('.close-modal').forEach((button) => button.onclick = () => button.closest('.modal-backdrop').classList.add('hidden')); $('acceptCallBtn').onclick = acceptIncoming; $('declineCallBtn').onclick = declineIncoming;
 
       socket.on('connect', () => { setConnection(true); if (state.joined) socket.emit('joinRoom', { roomCode:state.roomCode, username:state.myName, clientId:state.clientId, peerId:state.peerId, avatarUrl:state.avatarUrl }); }); socket.on('disconnect', () => setConnection(false)); socket.on('connect_error', () => setConnection(false));
-      socket.on('previousMessages', (messages) => { $('messages').textContent = ''; const welcome = document.createElement('div'); welcome.className = 'welcome hidden'; welcome.id = 'welcome'; welcome.innerHTML = '<div><div class="welcome-mark">↗</div><h2>Your room is ready.</h2><p>Start the conversation, invite people with the code, or share a small piece of the day.</p></div>'; $('messages').appendChild(welcome); messages.forEach(renderMessage); });
-      socket.on('newMessage', renderMessage); socket.on('message:updated', renderMessage); socket.on('systemMessage', (text) => { const notice = document.createElement('div'); notice.className = 'system-message'; notice.textContent = text; $('messages').appendChild(notice); $('messages').scrollTop = $('messages').scrollHeight; }); socket.on('app:error', (data) => showToast(data.message || 'Something went wrong.')); socket.on('room:ready', (data) => showNotice(data.databaseConfigured ? 'Connected to durable room storage.' : 'Demo mode: add Supabase environment variables for persistence.', !data.databaseConfigured));
-      socket.on('presence:update', (members) => renderMembers(members)); socket.on('typing:update', (data) => { if (!data.clientId || data.clientId === state.clientId) return; if (data.isTyping) typingUsers.set(data.clientId, data.username); else typingUsers.delete(data.clientId); renderTyping(); socket.emit('presence:refresh'); }); socket.on('incoming-call', handleIncoming); socket.on('call-accepted', (data) => { if (!state.callActive || !state.stream || !state.peer) return; const call = state.peer.call(data.acceptorPeerId, state.stream, { metadata:{ video:state.callVideo } }); $('remoteCaption').textContent = data.acceptorName || 'Other person'; attachCall(call); }); socket.on('call-ended', (data) => { if (!data.callId || data.callId === state.callId) endCall(false); });
+      socket.on('previousMessages', (messages) => { $('messages').textContent = ''; const welcome = document.createElement('div'); welcome.className = 'welcome hidden'; welcome.id = 'welcome'; welcome.innerHTML = '<div><div class="welcome-mark">↗</div><h2>Your room is ready.</h2><p>Start the conversation, invite people with the code, or share a small piece of the day.</p></div>'; $('messages').appendChild(welcome); messages.forEach(renderMessage); scrollToLatest(false); });
+      socket.on('newMessage', renderMessage); socket.on('message:updated', renderMessage); socket.on('systemMessage', (text) => { const notice = document.createElement('div'); notice.className = 'system-message'; notice.textContent = text; $('messages').appendChild(notice); $('messages').scrollTop = $('messages').scrollHeight; }); socket.on('app:error', (data) => { showToast(data.message || 'Something went wrong.'); if (state.callActive && data.message && data.message.toLowerCase().includes('call')) endCall(false); }); socket.on('room:ready', (data) => showNotice(data.databaseConfigured ? 'Connected to durable room storage.' : 'Demo mode: add Supabase environment variables for persistence.', !data.databaseConfigured));
+      socket.on('presence:update', (members) => renderMembers(members)); socket.on('typing:update', (data) => { if (!data.clientId || data.clientId === state.clientId) return; if (data.isTyping) typingUsers.set(data.clientId, data.username); else typingUsers.delete(data.clientId); renderTyping(); socket.emit('presence:refresh'); }); socket.on('incoming-call', handleIncoming); socket.on('call-accepted', (data) => { if (!state.callActive || !state.stream || !state.peer || !data.acceptorPeerId) { if (state.callActive) { showToast('The other device did not complete call setup.'); endCall(false); } return; } const call = state.peer.call(data.acceptorPeerId, state.stream, { metadata:{ video:state.callVideo } }); $('remoteCaption').textContent = data.acceptorName || 'Other person'; attachCall(call); }); socket.on('call-ended', (data) => { if (!data.callId || data.callId === state.callId) endCall(false); });
       socket.on('profile:updated', (profile) => { if (profile.userId === state.clientId) { state.myName = profile.username || state.myName; state.avatarUrl = profile.avatarUrl || state.avatarUrl; } });
       applyTheme(); ensurePeer(); if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     })();
