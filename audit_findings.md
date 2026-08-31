@@ -29,3 +29,11 @@ The upgraded page rendered correctly with the lightweight CSS flight scene and r
 ## Interactive verification update
 
 The cache-busted local build successfully entered an 8-digit room, displayed one live member, reported Socket.IO connected status, rendered the demo-mode persistence notice, and sent a text message with edit/delete controls. The appearance modal opened and the light theme applied immediately. Media upload and WebRTC calls remain account/device dependent and require Supabase Storage configuration plus browser permissions.
+
+## Final verification
+
+`node --check server.js`, the extracted client JavaScript syntax check, `git diff --check`, local `/health` and `/api/config` smoke requests, unsupported upload rejection, and the real two-client Socket.IO integration test all passed. The final archive is `/home/ubuntu/orbit-chat-upgrade.zip` and excludes `.git` and `node_modules`.
+
+## Mobile scroll fix verification
+
+The mobile layout was patched so `.app-body` and `.chat-panel` are height-constrained, `#messages` is the only independently scrollable region with touch scrolling, and `.composer` is flex-fixed/sticky at the bottom. A local long-message test produced `scrollHeight > clientHeight` and kept the composer bottom aligned with the viewport, confirming the composer no longer gets pushed below the screen. The UI now includes a `↓ Latest` button that appears when the user scrolls away from the newest messages.

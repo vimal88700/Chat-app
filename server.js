@@ -410,14 +410,21 @@ io.on('connection', (socket) => {
 
   socket.on('call-accept', async (payload = {}) => {
     const roomCode = socket.data.roomCode;
-    if (!roomCode || !payload.callerPeerId) return;
+    const callerPeerId = cleanText(payload.callerPeerId, 120);
+    const acceptorPeerId = cleanText(payload.acceptorPeerId || socket.data.peerId, 120);
+    if (!roomCode || !callerPeerId || !acceptorPeerId) {
+      return emitError(socket, 'Call setup is not ready yet. Please try again.');
+    }
+    socket.data.peerId = acceptorPeerId;
     const peers = await io.in(roomCode).fetchSockets();
-    const caller = peers.find((peer) => peer.data.peerId === cleanText(payload.callerPeerId, 120));
+    const caller = peers.find((peer) => peer.data.peerId === callerPeerId);
     if (caller) {
       caller.emit('call-accepted', {
-        callId: cleanText(payload.callId, 80), acceptorPeerId: socket.data.peerId,
+        callId: cleanText(payload.callId, 80), acceptorPeerId,
         acceptorName: socket.data.username, video: Boolean(payload.video),
       });
+    } else {
+      emitError(socket, 'The caller is no longer connected.');
     }
   });
 

@@ -57,7 +57,7 @@ async function waitForServer() {
   const accepted = once(alice, 'call-accepted');
   alice.emit('call-request', { peerId: 'peer-alice', callId: 'call-1', video: true });
   assert.equal((await incoming).callerPeerId, 'peer-alice');
-  bob.emit('call-accept', { callerPeerId: 'peer-alice', callId: 'call-1', video: true });
+  bob.emit('call-accept', { callerPeerId: 'peer-alice', acceptorPeerId: 'peer-bob', callId: 'call-1', video: true });
   assert.equal((await accepted).acceptorPeerId, 'peer-bob');
 
   alice.disconnect(); bob.disconnect(); child.kill();
