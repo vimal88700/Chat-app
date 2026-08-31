@@ -41,3 +41,7 @@ The mobile layout was patched so `.app-body` and `.chat-panel` are height-constr
 ## Messaging-first correction verification
 
 The separate Jitsi meeting modal and external Jitsi references were removed from the client. The local room now displays one `Call` button, and opening it shows `Audio call` and `Video call` menu items. The room continues to use the existing no-login room-code/name flow, while the mobile scroll button and fixed composer remain present.
+
+## Type-specific call controls verification
+
+The call panel now has an audio mode and a video mode. Browser verification showed that audio mode displays Mute, Speaker, and End only; Camera, Flip, and Share are hidden. Video mode displays Mute, Speaker, Camera, Flip, Share, and End. The no-login room page contains no external meeting/Jitsi text. The local server and realtime integration checks passed.
